@@ -1,5 +1,6 @@
 package com.minecolonies.coremod.entity.ai.citizen.guard;
 
+import com.chaosbuffalo.targeting_api.Targeting;
 import com.minecolonies.api.colony.permissions.Action;
 import com.minecolonies.api.util.*;
 import com.minecolonies.coremod.colony.Colony;
@@ -370,10 +371,9 @@ public abstract class AbstractEntityAIGuard extends AbstractEntityAIInteract<Job
             targetEntity = BarbarianUtils.getClosestBarbarianToEntity(this.worker, currentSearchDistance);
         }
 
-        entityList = CompatibilityUtils.getWorld(worker).getEntitiesWithinAABB(EntityMob.class, this.getTargetableArea(currentSearchDistance));
-        entityList.addAll(CompatibilityUtils.getWorld(worker).getEntitiesWithinAABB(EntitySlime.class, this.getTargetableArea(currentSearchDistance)));
-        entityList.addAll(CompatibilityUtils.getWorld(worker).getEntitiesWithinAABB(EntityPlayer.class, this.getTargetableArea(currentSearchDistance)));
-
+        entityList = CompatibilityUtils.getWorld(worker).getEntitiesWithinAABB(EntityLivingBase.class,
+                this.getTargetableArea(currentSearchDistance),
+                e -> Targeting.isValidTarget(Targeting.TargetType.ENEMY, this.worker, e, true));
         if (targetEntity != null && targetEntity.isEntityAlive() && worker.getEntitySenses().canSee(targetEntity))
         {
             return GUARD_HUNT_DOWN_TARGET;

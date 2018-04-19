@@ -14,6 +14,7 @@ import com.minecolonies.coremod.event.FMLEventHandler;
 import com.minecolonies.coremod.network.messages.*;
 import com.minecolonies.coremod.proxy.IProxy;
 import com.minecolonies.coremod.util.RecipeHandler;
+import com.minecolonies.integration.Integrations;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -35,7 +36,8 @@ import org.jetbrains.annotations.NotNull;
 
 @Mod.EventBusSubscriber
 @Mod(modid = Constants.MOD_ID, name = Constants.MOD_NAME, version = Constants.VERSION,
-  /*dependencies = Constants.FORGE_VERSION,*/ acceptedMinecraftVersions = Constants.MC_VERSION)
+  /*dependencies = Constants.FORGE_VERSION,*/ acceptedMinecraftVersions = Constants.MC_VERSION,
+     dependencies = "required-after:targeting_api")
 public class MineColonies
 {
     @CapabilityInject(IColonyTagCapability.class)
@@ -139,6 +141,8 @@ public class MineColonies
         ModAchievements.init();
 
         RecipeHandler.init(Configurations.gameplay.enableInDevelopmentFeatures, Configurations.gameplay.supplyChests);
+
+        Integrations.setup();
     }
 
     private static synchronized void initializeNetwork()
