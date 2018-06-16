@@ -1,8 +1,8 @@
 package com.minecolonies.integration;
 
+import com.chaosbuffalo.targeting_api.Faction;
 import com.chaosbuffalo.targeting_api.Targeting;
 import com.minecolonies.api.colony.permissions.Action;
-import com.minecolonies.coremod.colony.buildings.AbstractBuildingGuards;
 import com.minecolonies.coremod.colony.jobs.JobGuard;
 import com.minecolonies.coremod.entity.EntityCitizen;
 import net.minecraft.entity.Entity;
@@ -57,6 +57,8 @@ public class Integrations {
             }
             return false;
         };
+        Faction farmAnimals = Targeting.getFaction("FarmAnimals");
+        farmAnimals.addFriendClass(EntityCitizen.class);
         Targeting.registerFriendlyCallback(friendlyWrapper);
     }
 

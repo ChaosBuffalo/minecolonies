@@ -56,7 +56,7 @@ public abstract class AbstractEntityAIGuard extends AbstractEntityAIInteract<Job
     /**
      * The start search distance of the guard to track/attack entities may get more depending on the level.
      */
-    private static final double MAX_ATTACK_DISTANCE = 20.0D;
+    private static final double MAX_ATTACK_DISTANCE = 40.0D;
 
     /**
      * Basic delay after operations.
@@ -71,7 +71,7 @@ public abstract class AbstractEntityAIGuard extends AbstractEntityAIInteract<Job
     /**
      * Y range in which the guard detects other entities.
      */
-    private static final double HEIGHT_DETECTION_RANGE = 10D;
+    private static final double HEIGHT_DETECTION_RANGE = 25D;
 
     /**
      * Max tries to find a position to path to.
