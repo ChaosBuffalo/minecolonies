@@ -37,7 +37,7 @@ import org.jetbrains.annotations.NotNull;
 @Mod.EventBusSubscriber
 @Mod(modid = Constants.MOD_ID, name = Constants.MOD_NAME, version = Constants.VERSION,
   /*dependencies = Constants.FORGE_VERSION,*/ acceptedMinecraftVersions = Constants.MC_VERSION,
-     dependencies = "required-after:targeting_api")
+     dependencies = "required-after:targeting_api;after:gbook")
 public class MineColonies
 {
     @CapabilityInject(IColonyTagCapability.class)
