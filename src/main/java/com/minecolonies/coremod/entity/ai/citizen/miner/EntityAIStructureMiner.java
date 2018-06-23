@@ -4,7 +4,7 @@ import com.minecolonies.api.util.Log;
 import com.minecolonies.api.util.Vec2i;
 import com.minecolonies.coremod.colony.ColonyManager;
 import com.minecolonies.coremod.colony.Structures;
-import com.minecolonies.coremod.colony.buildings.BuildingMiner;
+import com.minecolonies.coremod.colony.buildings.workerbuildings.BuildingMiner;
 import com.minecolonies.coremod.colony.jobs.JobMiner;
 import com.minecolonies.coremod.colony.workorders.WorkOrderBuildMiner;
 import com.minecolonies.coremod.entity.ai.basic.AbstractEntityAIStructureWithWorkOrder;
@@ -120,10 +120,16 @@ public class EntityAIStructureMiner extends AbstractEntityAIStructureWithWorkOrd
           new AITarget(MINER_BUILDING_SHAFT, this::doShaftBuilding),
           new AITarget(MINER_MINING_NODE, this::executeNodeMining)
         );
-        worker.setSkillModifier(
+        worker.getCitizenExperienceHandler().setSkillModifier(
           2 * worker.getCitizenData().getStrength()
             + worker.getCitizenData().getEndurance());
         worker.setCanPickUpLoot(true);
+    }
+
+    @Override
+    public Class getExpectedBuildingClass()
+    {
+        return BuildingMiner.class;
     }
 
     //Miner wants to work but is not at building
@@ -141,7 +147,7 @@ public class EntityAIStructureMiner extends AbstractEntityAIStructureWithWorkOrd
     @Override
     public BuildingMiner getOwnBuilding()
     {
-        return (BuildingMiner) worker.getWorkBuilding();
+        return (BuildingMiner) worker.getCitizenColonyHandler().getWorkBuilding();
     }
 
     /**
@@ -168,7 +174,7 @@ public class EntityAIStructureMiner extends AbstractEntityAIStructureWithWorkOrd
     @NotNull
     private String getRenderMetaTorch()
     {
-        if (worker.hasItemInInventory(Blocks.TORCH, -1))
+        if (worker.getCitizenInventoryHandler().hasItemInInventory(Blocks.TORCH, -1))
         {
             return RENDER_META_TORCH;
         }
@@ -317,7 +323,7 @@ public class EntityAIStructureMiner extends AbstractEntityAIStructureWithWorkOrd
 
     private AIState doShaftMining()
     {
-        worker.setLatestStatus(new TextComponentTranslation("com.minecolonies.coremod.status.mining"));
+        worker.getCitizenStatusHandler().setLatestStatus(new TextComponentTranslation("com.minecolonies.coremod.status.mining"));
 
         minerWorkingLocation = getNextBlockInShaftToMine();
         if (minerWorkingLocation == null)
@@ -631,7 +637,7 @@ public class EntityAIStructureMiner extends AbstractEntityAIStructureWithWorkOrd
         if (requiredName != null)
         {
             final WorkOrderBuildMiner wo = new WorkOrderBuildMiner(requiredName, requiredName, rotateCount, structurePos, false, getOwnBuilding().getLocation());
-            worker.getColony().getWorkManager().addWorkOrder(wo, false);
+            worker.getCitizenColonyHandler().getColony().getWorkManager().addWorkOrder(wo, false);
             job.setWorkOrder(wo);
             initiate();
         }
@@ -732,11 +738,11 @@ public class EntityAIStructureMiner extends AbstractEntityAIStructureWithWorkOrd
         final int slot;
         if (block instanceof BlockLadder)
         {
-            slot = worker.findFirstSlotInInventoryWith(block, -1);
+            slot = worker.getCitizenInventoryHandler().findFirstSlotInInventoryWith(block, -1);
         }
         else
         {
-            slot = worker.findFirstSlotInInventoryWith(block, block.getMetaFromState(metadata));
+            slot = worker.getCitizenInventoryHandler().findFirstSlotInInventoryWith(block, block.getMetaFromState(metadata));
         }
         if (slot != -1)
         {

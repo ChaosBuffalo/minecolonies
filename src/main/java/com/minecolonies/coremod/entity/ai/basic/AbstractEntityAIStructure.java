@@ -4,6 +4,7 @@ import com.minecolonies.api.compatibility.candb.ChiselAndBitsCheck;
 import com.minecolonies.api.configuration.Configurations;
 import com.minecolonies.api.util.*;
 import com.minecolonies.coremod.blocks.ModBlocks;
+import com.minecolonies.coremod.colony.buildings.AbstractBuildingStructureBuilder;
 import com.minecolonies.coremod.colony.jobs.AbstractJob;
 import com.minecolonies.coremod.colony.jobs.AbstractJobStructure;
 import com.minecolonies.coremod.entity.EntityCitizen;
@@ -13,6 +14,7 @@ import com.minecolonies.coremod.entity.ai.util.Structure;
 import com.minecolonies.coremod.placementhandlers.IPlacementHandler;
 import com.minecolonies.coremod.placementhandlers.PlacementHandlers;
 import com.minecolonies.coremod.util.StructureWrapper;
+import com.minecolonies.coremod.util.WorkerUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -164,6 +166,12 @@ public abstract class AbstractEntityAIStructure<J extends AbstractJob> extends A
         );
     }
 
+    @Override
+    public Class getExpectedBuildingClass()
+    {
+        return AbstractBuildingStructureBuilder.class;
+    }
+
     /**
      * Generate a function that will iterate over a structure.
      * <p>
@@ -258,7 +266,7 @@ public abstract class AbstractEntityAIStructure<J extends AbstractJob> extends A
     @Override
     public void fillItemsList()
     {
-        worker.setLatestStatus(new TextComponentTranslation("com.minecolonies.coremod.status.gathering"));
+        worker.getCitizenStatusHandler().setLatestStatus(new TextComponentTranslation("com.minecolonies.coremod.status.gathering"));
 
         if (currentStructure == null)
         {
@@ -280,7 +288,7 @@ public abstract class AbstractEntityAIStructure<J extends AbstractJob> extends A
         if (job instanceof AbstractJobStructure)
         {
             executeSpecificCompleteActions();
-            worker.addExperience(XP_EACH_BUILDING);
+            worker.getCitizenExperienceHandler().addExperience(XP_EACH_BUILDING);
         }
 
         return PICK_UP_RESIDUALS;
@@ -295,7 +303,7 @@ public abstract class AbstractEntityAIStructure<J extends AbstractJob> extends A
     {
         if (!BlockUtils.shouldNeverBeMessedWith(structureBlock.worldBlock))
         {
-            worker.setLatestStatus(new TextComponentTranslation("com.minecolonies.coremod.status.decorating"));
+            worker.getCitizenStatusHandler().setLatestStatus(new TextComponentTranslation("com.minecolonies.coremod.status.decorating"));
 
             //Fill workFrom with the position from where the builder should build.
             //also ensure we are at that position.
@@ -312,7 +320,7 @@ public abstract class AbstractEntityAIStructure<J extends AbstractJob> extends A
                 return true;
             }
 
-            worker.faceBlock(structureBlock.blockPosition);
+            WorkerUtil.faceBlock(structureBlock.blockPosition, worker);
 
             @Nullable final Block block = structureBlock.block;
 
@@ -377,7 +385,7 @@ public abstract class AbstractEntityAIStructure<J extends AbstractJob> extends A
                 decreaseInventory(coords, decrease.getBlock(), decrease);
                 connectBlockToBuildingIfNecessary(decrease, coords);
                 worker.swingArm(worker.getActiveHand());
-                worker.addExperience(XP_EACH_BLOCK);
+                worker.getCitizenExperienceHandler().addExperience(XP_EACH_BLOCK);
 
                 return true;
             }
@@ -447,7 +455,7 @@ public abstract class AbstractEntityAIStructure<J extends AbstractJob> extends A
         {
             if (!ItemStackUtils.isEmpty(tempStack))
             {
-                final int slot = worker.findFirstSlotInInventoryWith(tempStack.getItem(), tempStack.getItemDamage());
+                final int slot = worker.getCitizenInventoryHandler().findFirstSlotInInventoryWith(tempStack.getItem(), tempStack.getItemDamage());
                 if (slot != -1)
                 {
                     new InvWrapper(getInventory()).extractItem(slot, 1, false);
@@ -458,7 +466,7 @@ public abstract class AbstractEntityAIStructure<J extends AbstractJob> extends A
 
         if (Configurations.gameplay.builderBuildBlockDelay > 0 && blockToPlace != Blocks.AIR)
         {
-            setDelay(Configurations.gameplay.builderBuildBlockDelay * PROGRESS_MULTIPLIER / (worker.getLevel() + PROGRESS_MULTIPLIER));
+            setDelay(Configurations.gameplay.builderBuildBlockDelay * PROGRESS_MULTIPLIER / (worker.getCitizenExperienceHandler().getLevel() + PROGRESS_MULTIPLIER));
         }
 
         return true;
@@ -519,7 +527,7 @@ public abstract class AbstractEntityAIStructure<J extends AbstractJob> extends A
     {
         if (!BlockUtils.shouldNeverBeMessedWith(structureBlock.worldBlock))
         {
-            worker.setLatestStatus(new TextComponentTranslation("com.minecolonies.coremod.status.building"));
+            worker.getCitizenStatusHandler().setLatestStatus(new TextComponentTranslation("com.minecolonies.coremod.status.building"));
 
             //Fill workFrom with the position from where the builder should build.
             //also ensure we are at that position.
@@ -545,13 +553,13 @@ public abstract class AbstractEntityAIStructure<J extends AbstractJob> extends A
             @Nullable Block block = structureBlock.block;
             @Nullable IBlockState blockState = structureBlock.metadata;
             if (block == ModBlocks.blockSolidSubstitution
-                  && shallReplaceSolidSubstitutionBlock(structureBlock.worldBlock, structureBlock.worldMetadata))
+                  || shallReplaceSolidSubstitutionBlock(structureBlock.worldBlock, structureBlock.worldMetadata))
             {
                 blockState = getSolidSubstitution(structureBlock.blockPosition);
                 block = blockState.getBlock();
             }
 
-            worker.faceBlock(structureBlock.blockPosition);
+            WorkerUtil.faceBlock(structureBlock.blockPosition, worker);
 
             //should never happen
             if (block == null)
@@ -653,7 +661,7 @@ public abstract class AbstractEntityAIStructure<J extends AbstractJob> extends A
             return true;
         }
 
-        worker.setLatestStatus(new TextComponentTranslation("com.minecolonies.coremod.status.clearing"));
+        worker.getCitizenStatusHandler().setLatestStatus(new TextComponentTranslation("com.minecolonies.coremod.status.clearing"));
         //Don't break bedrock etc.
         //Don't break bedrock etc.
         if (!BlockUtils.shouldNeverBeMessedWith(currentBlock.worldBlock))
@@ -665,7 +673,7 @@ public abstract class AbstractEntityAIStructure<J extends AbstractJob> extends A
                 return false;
             }
 
-            worker.faceBlock(currentBlock.blockPosition);
+            WorkerUtil.faceBlock(currentBlock.blockPosition, worker);
 
             //We need to deal with materials
             if (Configurations.gameplay.builderInfiniteResources || currentBlock.worldMetadata.getMaterial().isLiquid())
@@ -674,7 +682,7 @@ public abstract class AbstractEntityAIStructure<J extends AbstractJob> extends A
                 world.setBlockToAir(currentBlock.blockPosition);
                 world.setBlockState(currentBlock.blockPosition, Blocks.AIR.getDefaultState());
                 worker.swingArm(worker.getActiveHand());
-                setDelay(UNLIMITED_RESOURCES_TIMEOUT * PROGRESS_MULTIPLIER / (worker.getLevel() + PROGRESS_MULTIPLIER));
+                setDelay(UNLIMITED_RESOURCES_TIMEOUT * PROGRESS_MULTIPLIER / (worker.getCitizenExperienceHandler().getLevel() + PROGRESS_MULTIPLIER));
             }
             else
             {
@@ -715,7 +723,7 @@ public abstract class AbstractEntityAIStructure<J extends AbstractJob> extends A
     {
         if (currentStructure == null)
         {
-            worker.setLatestStatus(new TextComponentTranslation("com.minecolonies.coremod.status.waitingForBuild"));
+            worker.getCitizenStatusHandler().setLatestStatus(new TextComponentTranslation("com.minecolonies.coremod.status.waitingForBuild"));
         }
         return currentStructure != null;
     }
@@ -826,7 +834,7 @@ public abstract class AbstractEntityAIStructure<J extends AbstractJob> extends A
             return true;
         }
 
-        worker.setLatestStatus(new TextComponentTranslation("com.minecolonies.coremod.status.spawning"));
+        worker.getCitizenStatusHandler().setLatestStatus(new TextComponentTranslation("com.minecolonies.coremod.status.spawning"));
 
         final Entity entity = ItemStackUtils.getEntityFromEntityInfoOrNull(entityInfo, world);
         if (entity != null && !isEntityAtPosition(entity, world))
@@ -868,7 +876,7 @@ public abstract class AbstractEntityAIStructure<J extends AbstractJob> extends A
                     {
                         continue;
                     }
-                    final int slot = worker.findFirstSlotInInventoryWith(stack.getItem(), stack.getItemDamage());
+                    final int slot = worker.getCitizenInventoryHandler().findFirstSlotInInventoryWith(stack.getItem(), stack.getItemDamage());
                     if (slot != -1)
                     {
                         new InvWrapper(getInventory()).extractItem(slot, 1, false);
@@ -932,6 +940,6 @@ public abstract class AbstractEntityAIStructure<J extends AbstractJob> extends A
      */
     public void addWayPoint(final BlockPos pos)
     {
-        worker.getColony().addWayPoint(pos, world.getBlockState(pos));
+        worker.getCitizenColonyHandler().getColony().addWayPoint(pos, world.getBlockState(pos));
     }
 }

@@ -9,9 +9,9 @@ import com.minecolonies.api.colony.requestsystem.manager.IRequestManager;
 import com.minecolonies.api.colony.requestsystem.requester.IRequester;
 import com.minecolonies.api.util.BlockPosUtil;
 import com.minecolonies.coremod.MineColonies;
-import com.minecolonies.coremod.colony.buildings.AbstractBuilding;
-import com.minecolonies.coremod.colony.buildings.BuildingTownHall;
+import com.minecolonies.coremod.colony.buildings.registry.BuildingRegistry;
 import com.minecolonies.coremod.colony.buildings.views.AbstractBuildingView;
+import com.minecolonies.coremod.colony.buildings.workerbuildings.BuildingTownHall;
 import com.minecolonies.coremod.colony.permissions.PermissionsView;
 import com.minecolonies.coremod.colony.requestsystem.management.manager.StandardRequestManager;
 import com.minecolonies.coremod.colony.workorders.AbstractWorkOrder;
@@ -52,6 +52,11 @@ public final class ColonyView implements IColony
     private       String                              name        = "Unknown";
     private int      dimensionId;
     private BlockPos center = BlockPos.ORIGIN;
+
+    /**
+     * Datas about the happiness of a colony
+     */
+    private final HappinessData                       happinessData      = new HappinessData();
 
     /**
      * Defines if workers are hired manually or automatically.
@@ -608,7 +613,7 @@ public final class ColonyView implements IColony
     @Nullable
     public IMessage handleColonyBuildingViewMessage(final BlockPos buildingId, @NotNull final ByteBuf buf)
     {
-        @Nullable final AbstractBuildingView building = AbstractBuilding.createBuildingView(this, buildingId, buf);
+        @Nullable final AbstractBuildingView building = BuildingRegistry.createBuildingView(this, buildingId, buf);
         if (building != null)
         {
             buildings.put(building.getID(), building);
@@ -619,6 +624,17 @@ public final class ColonyView implements IColony
             }
         }
 
+        return null;
+    }
+
+    /**
+     * Update the happiness values for a colony
+     * @param happinessData The new values for happiness
+     * @return null == no response.
+     */
+    public IMessage handleHappinessDataMessage(final HappinessData happinessData)
+    {
+        this.happinessData.setValues(happinessData);
         return null;
     }
 
@@ -793,6 +809,16 @@ public final class ColonyView implements IColony
         /**
          * Intentionally left empty.
          */
+    }
+
+    /**
+     * Get all the data indices about happiness
+     *
+     * @return An instance of {@link HappinessData} containing all the datas
+     */
+    public HappinessData getHappinessData()
+    {
+        return happinessData;
     }
 
     /**

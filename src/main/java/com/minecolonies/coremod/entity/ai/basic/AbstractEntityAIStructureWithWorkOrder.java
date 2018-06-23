@@ -54,6 +54,12 @@ public abstract class AbstractEntityAIStructureWithWorkOrder<J extends AbstractJ
         worker.setCanPickUpLoot(true);
     }
 
+    @Override
+    public Class getExpectedBuildingClass()
+    {
+        return AbstractBuildingStructureBuilder.class;
+    }
+
     /**
      * Takes the existing workorder, loads the structure and tests the worker order if it is valid.
      */
@@ -67,7 +73,7 @@ public abstract class AbstractEntityAIStructureWithWorkOrder<J extends AbstractJ
             {
                 Log.getLogger().error(
                   String.format("Worker (%d:%d) ERROR - Starting and missing work order(%d)",
-                    worker.getColony().getID(),
+                    worker.getCitizenColonyHandler().getColony().getID(),
                     worker.getCitizenData().getId(), job.getWorkOrderId()));
                 return;
             }
@@ -79,11 +85,11 @@ public abstract class AbstractEntityAIStructureWithWorkOrder<J extends AbstractJ
                 {
                     Log.getLogger().error(
                       String.format("Worker (%d:%d) ERROR - Starting and missing building(%s)",
-                        worker.getColony().getID(), worker.getCitizenData().getId(), wo.getBuildingLocation()));
+                        worker.getCitizenColonyHandler().getColony().getID(), worker.getCitizenData().getId(), wo.getBuildingLocation()));
                     return;
                 }
 
-                worker.sendLocalizedChat(COM_MINECOLONIES_COREMOD_ENTITY_BUILDER_BUILDSTART, job.getStructure().getName());
+                worker.getCitizenChatHandler().sendLocalizedChat(COM_MINECOLONIES_COREMOD_ENTITY_BUILDER_BUILDSTART, job.getStructure().getName());
 
                 //Don't go through the CLEAR stage for repairs and upgrades
                 if (building.getBuildingLevel() > 0)
@@ -93,7 +99,7 @@ public abstract class AbstractEntityAIStructureWithWorkOrder<J extends AbstractJ
             }
             else if(!(wo instanceof WorkOrderBuildMiner))
             {
-                worker.sendLocalizedChat(COM_MINECOLONIES_COREMOD_ENTITY_BUILDER_BUILDSTART, wo.getName());
+                worker.getCitizenChatHandler().sendLocalizedChat(COM_MINECOLONIES_COREMOD_ENTITY_BUILDER_BUILDSTART, wo.getName());
             }
         }
     }
@@ -111,10 +117,10 @@ public abstract class AbstractEntityAIStructureWithWorkOrder<J extends AbstractJ
         }
 
         final BlockPos pos = workOrder.getBuildingLocation();
-        if (workOrder instanceof WorkOrderBuildBuilding && worker.getColony().getBuildingManager().getBuilding(pos) == null)
+        if (workOrder instanceof WorkOrderBuildBuilding && worker.getCitizenColonyHandler().getColony().getBuildingManager().getBuilding(pos) == null)
         {
             Log.getLogger().warn("AbstractBuilding does not exist - removing build request");
-            worker.getColony().getWorkManager().removeWorkOrder(workOrder);
+            worker.getCitizenColonyHandler().getColony().getWorkManager().removeWorkOrder(workOrder);
             return;
         }
 
@@ -263,13 +269,13 @@ public abstract class AbstractEntityAIStructureWithWorkOrder<J extends AbstractJ
 
         if (wo instanceof WorkOrderBuildBuilding)
         {
-            worker.sendLocalizedChat(COM_MINECOLONIES_COREMOD_ENTITY_BUILDER_BUILDCOMPLETE, structureName);
+            worker.getCitizenChatHandler().sendLocalizedChat(COM_MINECOLONIES_COREMOD_ENTITY_BUILDER_BUILDCOMPLETE, structureName);
         }
 
         if (wo == null)
         {
             Log.getLogger().error(String.format("Worker (%d:%d) ERROR - Finished, but missing work order(%d)",
-              worker.getColony().getID(),
+              worker.getCitizenColonyHandler().getColony().getID(),
               worker.getCitizenData().getId(),
               job.getWorkOrderId()));
         }
@@ -282,7 +288,7 @@ public abstract class AbstractEntityAIStructureWithWorkOrder<J extends AbstractJ
                 if (building == null)
                 {
                     Log.getLogger().error(String.format("Builder (%d:%d) ERROR - Finished, but missing building(%s)",
-                            worker.getColony().getID(),
+                            worker.getCitizenColonyHandler().getColony().getID(),
                             worker.getCitizenData().getId(),
                             woh.getBuildingLocation()));
                 }
@@ -385,8 +391,15 @@ public abstract class AbstractEntityAIStructureWithWorkOrder<J extends AbstractJ
         if (job.getStructure().getBlockInfo().tileentityData != null)
         {
             final TileEntity tileentityflowerpot = world.getTileEntity(pos);
-            tileentityflowerpot.readFromNBT(job.getStructure().getBlockInfo().tileentityData);
-            world.setTileEntity(pos, tileentityflowerpot);
+            if (tileentityflowerpot == null)
+            {
+                TileEntity.create(world, job.getStructure().getBlockInfo().tileentityData);
+            }
+            else
+            {
+                tileentityflowerpot.readFromNBT(job.getStructure().getBlockInfo().tileentityData);
+                world.setTileEntity(pos, tileentityflowerpot);
+            }
         }
     }
 

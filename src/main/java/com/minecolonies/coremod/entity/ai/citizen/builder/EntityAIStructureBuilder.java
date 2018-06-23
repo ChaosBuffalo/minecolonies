@@ -5,6 +5,7 @@ import com.minecolonies.api.util.EntityUtils;
 import com.minecolonies.coremod.blocks.ModBlocks;
 import com.minecolonies.coremod.colony.buildings.AbstractBuilding;
 import com.minecolonies.coremod.colony.buildings.AbstractBuildingStructureBuilder;
+import com.minecolonies.coremod.colony.buildings.workerbuildings.BuildingBuilder;
 import com.minecolonies.coremod.colony.jobs.JobBuilder;
 import com.minecolonies.coremod.colony.workorders.WorkOrderBuild;
 import com.minecolonies.coremod.colony.workorders.WorkOrderBuildDecoration;
@@ -65,9 +66,15 @@ public class EntityAIStructureBuilder extends AbstractEntityAIStructureWithWorkO
           new AITarget(this::checkIfExecute, this::getState),
           new AITarget(START_WORKING, this::startWorkingAtOwnBuilding)
         );
-        worker.setSkillModifier(INTELLIGENCE_MULTIPLIER * worker.getCitizenData().getIntelligence()
+        worker.getCitizenExperienceHandler().setSkillModifier(INTELLIGENCE_MULTIPLIER * worker.getCitizenData().getIntelligence()
                                   + STRENGTH_MULTIPLIER * worker.getCitizenData().getStrength());
         worker.setCanPickUpLoot(true);
+    }
+
+    @Override
+    public Class getExpectedBuildingClass()
+    {
+        return BuildingBuilder.class;
     }
 
     private boolean checkIfExecute()
@@ -174,7 +181,7 @@ public class EntityAIStructureBuilder extends AbstractEntityAIStructureWithWorkO
 
         if (blockState.getBlock() == ModBlocks.blockWayPoint)
         {
-            worker.getColony().addWayPoint(pos, world.getBlockState(pos));
+            worker.getCitizenColonyHandler().getColony().addWayPoint(pos, world.getBlockState(pos));
         }
     }
 
