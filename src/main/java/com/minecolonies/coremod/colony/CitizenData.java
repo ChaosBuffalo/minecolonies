@@ -43,7 +43,7 @@ public class CitizenData
      * Maximum saturation of a citizen.
      */
     public static final  int    MAX_SATURATION          = 10;
-    private static final float  MAX_HEALTH              = 20.0F;
+    private static final float  MAX_HEALTH              = 40.0F;
     /**
      * Max level of an attribute a citizen may initially have.
      */

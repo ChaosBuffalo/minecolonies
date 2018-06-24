@@ -88,7 +88,7 @@ public final class GuardConstants
     /**
      * Base physical damage.
      */
-    public static final int BASE_PHYSICAL_DAMAGE = 3;
+    public static final int BASE_PHYSICAL_DAMAGE = 4;
 
     // -- Physical Guard Stuff -- \\
 
