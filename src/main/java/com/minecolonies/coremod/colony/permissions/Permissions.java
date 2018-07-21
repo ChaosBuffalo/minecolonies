@@ -176,10 +176,18 @@ public class Permissions implements IPermissions
         //Neutral
         permissionMap.put(Rank.NEUTRAL, 0);
         this.setPermission(Rank.NEUTRAL, Action.ACCESS_FREE_BLOCKS);
+        this.setPermission(Rank.NEUTRAL, Action.PICKUP_ITEM);
+        this.setPermission(Rank.NEUTRAL, Action.ATTACK_ENTITY);
+        this.setPermission(Rank.NEUTRAL, Action.THROW_POTION);
+        this.setPermission(Rank.NEUTRAL, Action.SHOOT_ARROW);
 
         //Hostile
         permissionMap.put(Rank.HOSTILE, 0);
         this.setPermission(Rank.HOSTILE, Action.GUARDS_ATTACK);
+        this.setPermission(Rank.HOSTILE, Action.PICKUP_ITEM);
+        this.setPermission(Rank.HOSTILE, Action.ATTACK_ENTITY);
+        this.setPermission(Rank.HOSTILE, Action.THROW_POTION);
+        this.setPermission(Rank.HOSTILE, Action.SHOOT_ARROW);
 
         this.colony = colony;
 
