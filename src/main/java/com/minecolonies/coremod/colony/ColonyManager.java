@@ -6,8 +6,8 @@ import com.minecolonies.api.colony.IColony;
 import com.minecolonies.api.colony.IColonyTagCapability;
 import com.minecolonies.api.colony.permissions.Player;
 import com.minecolonies.api.colony.permissions.Rank;
-import com.minecolonies.api.compatibility.CompatabilityManager;
-import com.minecolonies.api.compatibility.ICompatabilityManager;
+import com.minecolonies.api.compatibility.CompatibilityManager;
+import com.minecolonies.api.compatibility.ICompatibilityManager;
 import com.minecolonies.api.configuration.Configurations;
 import com.minecolonies.api.crafting.IRecipeManager;
 import com.minecolonies.api.util.ChunkLoadStorage;
@@ -175,12 +175,13 @@ public final class ColonyManager
     private static int missingChunksToLoad = 0;
 
     /**
-     * Creates a new compatabilityManager.
+     * Creates a new compatibilityManager.
      */
-    private static final ICompatabilityManager compatabilityManager = new CompatabilityManager();
+    private static final ICompatibilityManager compatibilityManager = new CompatibilityManager();
 
     private ColonyManager()
     {
+        compatibilityManager.discover();
         //Hides default constructor.
     }
 
@@ -926,7 +927,7 @@ public final class ColonyManager
         }
 
         final NBTTagCompound compCompound = new NBTTagCompound();
-        compatabilityManager.writeToNBT(compCompound);
+        compatibilityManager.writeToNBT(compCompound);
         compound.setTag(TAG_COMPATABILITY_MANAGER, compCompound);
 
         compound.setBoolean(TAG_DISTANCE, true);
@@ -1184,9 +1185,8 @@ public final class ColonyManager
 
         if(compound.hasKey(TAG_COMPATABILITY_MANAGER))
         {
-            compatabilityManager.readFromNBT(compound.getCompoundTag(TAG_COMPATABILITY_MANAGER));
+            compatibilityManager.readFromNBT(compound.getCompoundTag(TAG_COMPATABILITY_MANAGER));
         }
-        compatabilityManager.discover(world);
 
         final NBTTagCompound recipeCompound = compound.getCompoundTag(RECIPE_MANAGER_TAG);
         recipeManager.readFromNBT(recipeCompound);
@@ -1515,12 +1515,12 @@ public final class ColonyManager
     }
 
     /**
-     * Get an instance of the compatabilityManager.
+     * Get an instance of the compatibilityManager.
      * @return the manager.
      */
-    public static ICompatabilityManager getCompatabilityManager()
+    public static ICompatibilityManager getCompatibilityManager()
     {
-        return compatabilityManager;
+        return compatibilityManager;
     }
 
     /**
