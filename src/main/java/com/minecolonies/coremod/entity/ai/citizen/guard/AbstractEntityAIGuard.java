@@ -645,7 +645,7 @@ public abstract class AbstractEntityAIGuard<J extends AbstractJobGuard> extends 
     @SuppressWarnings({"squid:S3400", "squid:S109"})
     protected float getRangedAttackDamage()
     {
-        return 4;
+        return 8;
     }
 
     /**

@@ -19,7 +19,7 @@ public final class GuardConstants
     /**
      * double damage threshold
      */
-    public static final int DOUBLE_DAMAGE_THRESHOLD = 2;
+    public static final int DOUBLE_DAMAGE_THRESHOLD = 20;
 
     /**
      * Y search range.
@@ -88,7 +88,7 @@ public final class GuardConstants
     /**
      * Base physical damage.
      */
-    public static final int BASE_PHYSICAL_DAMAGE = 4;
+    public static final int BASE_PHYSICAL_DAMAGE = 8;
 
     // -- Physical Guard Stuff -- \\
 

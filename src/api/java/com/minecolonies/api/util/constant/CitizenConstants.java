@@ -75,7 +75,7 @@ public final class CitizenConstants
     /**
      * Base max health of the citizen.
      */
-    public static final double BASE_MAX_HEALTH            = 20D;
+    public static final double BASE_MAX_HEALTH            = 100D;
     /**
      * Base pathfinding range of the citizen.
      */

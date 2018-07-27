@@ -16,6 +16,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.IEntityOwnable;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -277,12 +279,12 @@ public class ColonyPermissionEventHandler
                     return;
                 }
 
-                if (stack.getItem() instanceof ItemPotion && !perms.hasPermission(event.getEntityPlayer(),
-                  Action.THROW_POTION))
-                {
-                    cancelEvent(event, event.getEntityPlayer(), colony, Action.THROW_POTION, event.getPos());
-                    return;
-                }
+//                if (stack.getItem() instanceof ItemPotion && !perms.hasPermission(event.getEntityPlayer(),
+//                  Action.THROW_POTION))
+//                {
+//                    cancelEvent(event, event.getEntityPlayer(), colony, Action.THROW_POTION, event.getPos());
+//                    return;
+//                }
 
                 if (stack.getItem() instanceof ItemScanTool
                       && !perms.hasPermission(event.getEntityPlayer(), Action.USE_SCAN_TOOL))
@@ -316,17 +318,17 @@ public class ColonyPermissionEventHandler
      *
      * @param event PlayerInteractEvent
      */
-    @SubscribeEvent
-    public void on(final PlayerInteractEvent.EntityInteract event)
-    {
-        if (isFreeToInteractWith(null, event.getPos())
-              && colony.getPermissions().hasPermission(event.getEntityPlayer(), Action.ACCESS_FREE_BLOCKS))
-        {
-            return;
-        }
-
-        checkEventCancelation(Action.RIGHTCLICK_ENTITY, event.getEntityPlayer(), event.getWorld(), event, event.getPos());
-    }
+//    @SubscribeEvent
+//    public void on(final PlayerInteractEvent.EntityInteract event)
+//    {
+//        if (isFreeToInteractWith(null, event.getPos())
+//              && colony.getPermissions().hasPermission(event.getEntityPlayer(), Action.ACCESS_FREE_BLOCKS))
+//        {
+//            return;
+//        }
+//
+//        checkEventCancelation(Action.RIGHTCLICK_ENTITY, event.getEntityPlayer(), event.getWorld(), event, event.getPos());
+//    }
 
     /**
      * Check if the event should be canceled for a given player and minimum rank.
@@ -368,16 +370,38 @@ public class ColonyPermissionEventHandler
      *
      * @param event PlayerInteractEvent
      */
-    @SubscribeEvent
-    public void on(final PlayerInteractEvent.EntityInteractSpecific event)
-    {
-        if (isFreeToInteractWith(null, event.getPos())
-              && colony.getPermissions().hasPermission(event.getEntityPlayer(), Action.ACCESS_FREE_BLOCKS))
-        {
-            return;
-        }
-        checkEventCancelation(Action.RIGHTCLICK_ENTITY, event.getEntityPlayer(), event.getWorld(), event, event.getPos());
-    }
+//    @SubscribeEvent
+//    public void on(final PlayerInteractEvent.EntityInteractSpecific event)
+//    {
+//        if (isFreeToInteractWith(null, event.getPos())
+//              && colony.getPermissions().hasPermission(event.getEntityPlayer(), Action.ACCESS_FREE_BLOCKS))
+//        {
+//            return;
+//        }
+//
+//        // Check if its something the player owns/mounts
+//        if (event.getTarget() instanceof EntityLivingBase){
+//            EntityLivingBase target = (EntityLivingBase) event.getTarget();
+//            Entity controller = target.getControllingPassenger();
+//            if (controller instanceof EntityPlayer) {
+//                EntityPlayer controllingPlayer = (EntityPlayer) controller;
+//                if (controllingPlayer.getUniqueID().equals(event.getEntityPlayer().getUniqueID())){
+//                    return;
+//                }
+//            }
+//            if (target instanceof IEntityOwnable){
+//                IEntityOwnable ownable = (IEntityOwnable) target;
+//                Entity owner = ownable.getOwner();
+//                if (owner != null && owner instanceof EntityPlayer) {
+//                    EntityPlayer playerOwner = (EntityPlayer) owner;
+//                    if (playerOwner.getUniqueID().equals(event.getEntityPlayer().getUniqueID())){
+//                        return;
+//                    }
+//                }
+//            }
+//        }
+//        checkEventCancelation(Action.RIGHTCLICK_ENTITY, event.getEntityPlayer(), event.getWorld(), event, event.getPos());
+//    }
 
     /**
      * ItemTossEvent handler.
@@ -408,11 +432,11 @@ public class ColonyPermissionEventHandler
      *
      * @param event EntityItemPickupEvent
      */
-    @SubscribeEvent
-    public void on(final EntityItemPickupEvent event)
-    {
-        checkEventCancelation(Action.PICKUP_ITEM, event.getEntityPlayer(), event.getEntityPlayer().getEntityWorld(), event, event.getEntityPlayer().getPosition());
-    }
+//    @SubscribeEvent
+//    public void on(final EntityItemPickupEvent event)
+//    {
+//        checkEventCancelation(Action.PICKUP_ITEM, event.getEntityPlayer(), event.getEntityPlayer().getEntityWorld(), event, event.getEntityPlayer().getPosition());
+//    }
 
     /**
      * FillBucketEvent handler.
@@ -445,11 +469,11 @@ public class ColonyPermissionEventHandler
      *
      * @param event EntityItemPickupEvent
      */
-    @SubscribeEvent
-    public void on(final ArrowLooseEvent event)
-    {
-        checkEventCancelation(Action.SHOOT_ARROW, event.getEntityPlayer(), event.getEntityPlayer().getEntityWorld(), event, event.getEntity().getPosition());
-    }
+//    @SubscribeEvent
+//    public void on(final ArrowLooseEvent event)
+//    {
+//        checkEventCancelation(Action.SHOOT_ARROW, event.getEntityPlayer(), event.getEntityPlayer().getEntityWorld(), event, event.getEntity().getPosition());
+//    }
 
     /**
      * AttackEntityEvent handler.
@@ -490,11 +514,6 @@ public class ColonyPermissionEventHandler
 
                 cancelEvent(event, event.getEntityPlayer(), colony, Action.ATTACK_CITIZEN, event.getTarget().getPosition());
                 return;
-            }
-
-            if (!(event.getTarget() instanceof EntityMob) && !perms.hasPermission(event.getEntityPlayer(), Action.ATTACK_ENTITY))
-            {
-                cancelEvent(event, event.getEntityPlayer(), colony, Action.ATTACK_ENTITY, event.getTarget().getPosition());
             }
         }
     }

@@ -418,6 +418,15 @@ public class Permissions implements IPermissions
 
         this.setPermission(Rank.NEUTRAL, Action.ACCESS_FREE_BLOCKS);
 
+
+        this.setPermission(Rank.HOSTILE, Action.ATTACK_ENTITY);
+        this.setPermission(Rank.HOSTILE, Action.THROW_POTION);
+        this.setPermission(Rank.HOSTILE, Action.SHOOT_ARROW);
+
+        this.setPermission(Rank.NEUTRAL, Action.ATTACK_ENTITY);
+        this.setPermission(Rank.NEUTRAL, Action.THROW_POTION);
+        this.setPermission(Rank.NEUTRAL, Action.SHOOT_ARROW);
+
         updatedPermissionAlready = true;
     }
 
